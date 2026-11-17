@@ -1,126 +1,367 @@
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>MyMusic</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#101014">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>{{ app_name }}</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" href="{{ url_for('static', filename=logo_file) }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename=logo_file) }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
-<body>
+<body data-user-id="{{ user.id }}"
+      data-username="{{ user.username }}"
+      data-role="{{ user.role }}"
+      data-share-type="{{ share_type or '' }}"
+      data-share-id="{{ share_id or '' }}">
 
     <div class="app">
-
-        <!-- Sidebar -->
+        <!-- Sidebar (Desktop) -->
         <aside class="sidebar">
-            <h2 class="logo">MyMusic<span> ♡</span></h2>
+            <div class="brand-row">
+                <img src="{{ url_for('static', filename=logo_file) }}" alt="{{ app_name }}" class="brand-logo">
+                <h2 class="logo">{{ app_name }}</h2>
+            </div>
 
-            <nav>
-                <p class="menu-title">MENU</p>
-                <a class="active" href="#">⌂ Home</a>
-                <a href="#">⌕ Search</a>
-                <a href="#">♫ Your Library</a>
+            <nav class="nav-group">
+                <p class="menu-title">DISCOVER</p>
+                <a href="#" class="nav-link active" data-view="home">⌂ Home</a>
+                <a href="#" class="nav-link" data-view="search">⌕ Search</a>
+                <a href="#" class="nav-link" data-view="library">♫ Library</a>
             </nav>
 
-            <div class="sidebar-bottom">
-                <p>YOUR COLLECTION</p>
-                <a href="#">♡ Liked Songs</a>
-                <a href="#">♫ Playlists</a>
+            <div class="nav-group">
+                <p class="menu-title">YOUR COLLECTION</p>
+                <a href="#" class="nav-link" data-view="liked">♡ Liked Songs</a>
+                <a href="#" class="nav-link" data-view="playlists">☰ Playlists</a>
+                <a href="#" class="nav-link" data-view="offline">⬇ Saved Offline</a>
+            </div>
+
+            {% if user.role in ('admin', 'trusted') %}
+            <div class="nav-group">
+                <p class="menu-title">ADD MUSIC</p>
+                <a href="#" class="nav-link" data-view="import">＋ Upload / Import</a>
+            </div>
+            {% endif %}
+
+            {% if user.role == 'admin' %}
+            <div class="nav-group">
+                <p class="menu-title">SERVER</p>
+                <a href="#" class="nav-link" data-view="admin">⚙ Admin &amp; Invites</a>
+            </div>
+            {% endif %}
+
+            <div class="sidebar-footer">
+                <div class="user-pill">
+                    <div class="profile">{{ user.username[0]|upper }}</div>
+                    <div class="user-meta">
+                        <strong>{{ user.username }}</strong>
+                        <span>{{ user.role }}</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('logout') }}" class="logout-btn" title="Sign out">Sign out</a>
             </div>
         </aside>
 
-
-        <!-- Main content -->
+        <!-- Main Content -->
         <main class="main-content">
-
-            <header>
+            <header class="top-header">
                 <div>
-                    <p class="greeting">YOUR PERSONAL MUSIC SPACE</p>
-                    <h1>Good evening ♡</h1>
+                    <p class="greeting">{{ app_name|upper }} • PERSONAL MUSIC SPACE</p>
+                    <h1 id="page-title">Good evening, {{ user.username }}</h1>
                 </div>
-                <div class="profile">M</div>
+                <div class="header-actions">
+                    <div class="search-pill">
+                        <span>⌕</span>
+                        <input type="search" id="global-search" placeholder="Search songs, artists, albums...">
+                    </div>
+                    <button class="btn-secondary mobile-only" id="mobile-logout-btn" onclick="location.href='/logout'">Sign out</button>
+                </div>
             </header>
 
-            <section class="welcome">
-                <div>
-                    <p>WELCOME TO YOUR LIBRARY</p>
-                    <h2>Your music.<br>Your world.</h2>
-                    <p class="welcome-description">
-                        All your favourite sounds in one place.
-                    </p>
+            <!-- HOME VIEW -->
+            <section id="view-home" class="view active">
+                <div class="hero-banner">
+                    <div class="hero-text">
+                        <p class="eyebrow">WELCOME BACK</p>
+                        <h2>Your music.<br>Anywhere you go.</h2>
+                        <p class="welcome-description">
+                            Stream in crisp Opus audio, save tracks offline on your phone, and share playlists with friends.
+                        </p>
+                        <div class="hero-buttons">
+                            <button class="btn-primary" id="btn-play-all">▶ Play Library</button>
+                            <button class="btn-secondary" id="btn-shuffle-all">⇄ Shuffle</button>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span id="stat-tracks">0</span>
+                            <label>Tracks</label>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-plays">0</span>
+                            <label>Your Plays</label>
+                        </div>
+                        <div class="stat-card">
+                            <span id="stat-offline">0</span>
+                            <label>Offline</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-heading">
+                        <h2>Recently Played</h2>
+                        <span id="recent-count">0 TRACKS</span>
+                    </div>
+                    <div id="recent-grid" class="card-grid"></div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-heading">
+                        <h2>Most Played</h2>
+                        <span>TOP PICKS</span>
+                    </div>
+                    <div id="top-list" class="track-list"></div>
                 </div>
             </section>
 
-            <section class="player-section">
+            <!-- SEARCH / LIBRARY / LIKED / OFFLINE SHARED LIST VIEW -->
+            <section id="view-tracks" class="view">
                 <div class="section-heading">
-                    <h2>Now Playing</h2>
-                    <span>YOUR PLAYER</span>
+                    <h2 id="tracks-view-title">All Tracks</h2>
+                    <div class="heading-tools">
+                        <button class="btn-secondary" id="btn-rescan" style="display:none;">↻ Rescan Folder</button>
+                        <span id="tracks-view-count">0 TRACKS</span>
+                    </div>
                 </div>
+                <div id="library-grid" class="card-grid"></div>
+                <div id="library-list" class="track-list"></div>
+            </section>
 
-                <div class="now-playing">
-
-                    <div class="album-art">
-                        <span>♫</span>
+            <!-- PLAYLISTS VIEW -->
+            <section id="view-playlists" class="view">
+                <div class="section-heading">
+                    <h2>Your Playlists</h2>
+                    <form id="create-playlist-form" class="inline-form">
+                        <input type="text" id="new-playlist-name" placeholder="New playlist name..." required>
+                        <button type="submit" class="btn-primary">+ Create</button>
+                    </form>
+                </div>
+                <div id="playlists-grid" class="card-grid"></div>
+                <div id="playlist-detail" class="playlist-detail hidden">
+                    <div class="section-heading">
+                        <div>
+                            <button class="btn-ghost" id="btn-back-playlists">← All Playlists</button>
+                            <h2 id="playlist-detail-title">Playlist</h2>
+                        </div>
+                        <div class="heading-tools">
+                            <button class="btn-primary" id="btn-play-playlist">▶ Play</button>
+                            <button class="btn-secondary" id="btn-share-playlist">⎘ Share Link</button>
+                            <button class="btn-danger" id="btn-delete-playlist">Delete</button>
+                        </div>
                     </div>
-
-                    <div class="song-info">
-                        <p class="song-label">CURRENTLY PLAYING</p>
-                        <h2>No song selected</h2>
-                        <p>Select something from your library.</p>
-                    </div>
-
-                    <div class="play-controls">
-                        <button>⏮</button>
-                        <button class="play-button">▶</button>
-                        <button>⏭</button>
-                    </div>
-
+                    <div id="playlist-tracks-list" class="track-list"></div>
                 </div>
             </section>
 
-            <section class="library-section">
-                <h2>Your Library</h2>
-                <p>Your music collection will appear here.</p>
+            <!-- UPLOAD & IMPORT VIEW -->
+            <section id="view-import" class="view">
+                <div class="import-grid">
+                    <div class="panel-card">
+                        <h3>Upload Audio Files</h3>
+                        <p class="muted">Supports MP3, Opus, M4A, OGG, FLAC, WAV. Lossless files are automatically compressed to 128 kbps Opus to save server space.</p>
+                        <form id="upload-form" class="stack-form">
+                            <label class="drop-zone" id="drop-zone">
+                                <input type="file" id="upload-input" multiple accept=".mp3,.opus,.m4a,.ogg,.flac,.wav,audio/*">
+                                <span>Drop audio files here or <strong>click to browse</strong></span>
+                                <small id="upload-file-count">No files selected</small>
+                            </label>
+                            <button type="submit" class="btn-primary">Upload to Library</button>
+                        </form>
+                    </div>
+
+                    <div class="panel-card">
+                        <h3>Import from Web, YouTube, or Torrent</h3>
+                        <p class="muted">Imports run in the background and compress audio to 128 kbps Opus.</p>
+                        <form id="import-form" class="stack-form">
+                            <label>Source Type
+                                <select id="import-type">
+                                    <option value="youtube">YouTube / Video URL (yt-dlp)</option>
+                                    <option value="url">Direct Audio URL (http/https)</option>
+                                    <option value="torrent">Torrent / Magnet Link (aria2c)</option>
+                                </select>
+                            </label>
+                            <label>URL or Magnet Link
+                                <input type="text" id="import-value" required placeholder="https://... or magnet:?xt=...">
+                            </label>
+                            <div id="capability-note" class="muted small"></div>
+                            <button type="submit" class="btn-primary">Start Import Job</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <div class="section-heading">
+                        <h2>Import Queue &amp; History</h2>
+                        <button class="btn-secondary" id="btn-refresh-jobs">↻ Refresh</button>
+                    </div>
+                    <div id="import-jobs-list" class="jobs-list"></div>
+                </div>
             </section>
 
+            <!-- ADMIN VIEW -->
+            <section id="view-admin" class="view">
+                <div class="import-grid">
+                    <div class="panel-card">
+                        <h3>Invite Friends</h3>
+                        <p class="muted">Generate a one-time invite code so friends can register their own account.</p>
+                        <form id="invite-form" class="inline-form">
+                            <select id="invite-role">
+                                <option value="listener">Listener (play, like, playlists)</option>
+                                <option value="trusted">Trusted (can also upload &amp; import)</option>
+                                <option value="admin">Admin (full control)</option>
+                            </select>
+                            <button type="submit" class="btn-primary">Generate Code</button>
+                        </form>
+                        <div id="invites-list" class="admin-list"></div>
+                    </div>
+
+                    <div class="panel-card">
+                        <h3>Users &amp; Permissions</h3>
+                        <p class="muted">Manage who can upload and import music.</p>
+                        <div id="users-list" class="admin-list"></div>
+                    </div>
+                </div>
+            </section>
         </main>
-
     </div>
 
-    <!-- Bottom music bar -->
-    <footer class="music-bar">
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav">
+        <button class="mobile-nav-btn active" data-view="home">⌂<span>Home</span></button>
+        <button class="mobile-nav-btn" data-view="search">⌕<span>Search</span></button>
+        <button class="mobile-nav-btn" data-view="library">♫<span>Library</span></button>
+        <button class="mobile-nav-btn" data-view="playlists">☰<span>Playlists</span></button>
+        {% if user.role in ('admin', 'trusted') %}
+        <button class="mobile-nav-btn" data-view="import">＋<span>Add</span></button>
+        {% else %}
+        <button class="mobile-nav-btn" data-view="offline">⬇<span>Offline</span></button>
+        {% endif %}
+    </nav>
 
-        <div class="bar-song">
-            <div class="mini-art">♫</div>
-            <div>
-                <strong>No song selected</strong>
-                <p>MyMusic Player</p>
+    <!-- Persistent Bottom Music Bar -->
+    <footer class="music-bar">
+        <div class="bar-song" id="btn-open-now-playing" title="Open Now Playing & Lyrics">
+            <img id="bar-cover" class="mini-art-img hidden" alt="Cover">
+            <div id="bar-cover-fallback" class="mini-art">♫</div>
+            <div class="bar-song-text">
+                <strong id="bar-title">No song selected</strong>
+                <p id="bar-artist">Pick a track to play</p>
             </div>
         </div>
 
         <div class="bar-controls">
             <div class="bar-buttons">
-                <button>⏮</button>
-                <button class="play-button">▶</button>
-                <button>⏭</button>
+                <button id="btn-shuffle" class="icon-btn" title="Shuffle">⇄</button>
+                <button id="btn-prev" class="icon-btn" title="Previous">⏮</button>
+                <button id="btn-play-pause" class="play-button" title="Play / Pause">▶</button>
+                <button id="btn-next" class="icon-btn" title="Next">⏭</button>
+                <button id="btn-repeat" class="icon-btn" title="Repeat">↻</button>
             </div>
-
             <div class="progress">
-                <span>0:00</span>
-                <div class="progress-line"></div>
-                <span>0:00</span>
+                <span id="time-current">0:00</span>
+                <input type="range" id="seek-bar" min="0" max="100" value="0" step="0.1">
+                <span id="time-duration">0:00</span>
             </div>
         </div>
 
-        <div class="volume">
-            ♫ ━━━━━
+        <div class="bar-right">
+            <button id="btn-bar-like" class="icon-btn" title="Like">♡</button>
+            <button id="btn-bar-lyrics" class="icon-btn" title="Now Playing & Lyrics">❝</button>
+            <button id="btn-bar-queue" class="icon-btn" title="Queue">☰</button>
+            <div class="volume-wrap">
+                <span>🔊</span>
+                <input type="range" id="volume-bar" min="0" max="1" step="0.02" value="0.9">
+            </div>
         </div>
-
     </footer>
 
+    <!-- Now Playing + Lyrics + Queue Modal -->
+    <div id="modal-player" class="modal hidden">
+        <div class="modal-card modal-wide">
+            <div class="modal-header">
+                <h3>Now Playing</h3>
+                <button class="icon-btn modal-close" data-close="modal-player">✕</button>
+            </div>
+            <div class="now-playing-modal-body">
+                <div class="np-left">
+                    <img id="np-cover" class="np-cover hidden" alt="Album cover">
+                    <div id="np-cover-fallback" class="np-cover-fallback">♫</div>
+                    <h2 id="np-title">No song selected</h2>
+                    <p id="np-artist" class="muted">—</p>
+                    <p id="np-album" class="muted small">—</p>
+                    <div class="np-actions">
+                        <button class="btn-secondary" id="np-btn-offline">⬇ Save Offline</button>
+                        <button class="btn-secondary" id="np-btn-download">⤓ Download File</button>
+                        <button class="btn-secondary" id="np-btn-share">⎘ Share</button>
+                        <button class="btn-secondary" id="np-btn-playlist">+ Playlist</button>
+                        {% if user.role in ('admin', 'trusted') %}
+                        <button class="btn-secondary" id="np-btn-edit">✎ Edit Info</button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="np-right">
+                    <div class="np-tabs">
+                        <button class="tab-btn active" data-np-tab="lyrics">Lyrics</button>
+                        <button class="tab-btn" data-np-tab="queue">Up Next (<span id="queue-count">0</span>)</button>
+                    </div>
+                    <pre id="np-lyrics-box" class="lyrics-box">No lyrics saved for this track yet.</pre>
+                    <div id="np-queue-box" class="queue-box hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Track Modal -->
+    <div id="modal-edit" class="modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Edit Song Info</h3>
+                <button class="icon-btn modal-close" data-close="modal-edit">✕</button>
+            </div>
+            <form id="edit-track-form" class="stack-form">
+                <input type="hidden" id="edit-track-id">
+                <label>Title <input type="text" id="edit-title" required></label>
+                <label>Artist <input type="text" id="edit-artist" required></label>
+                <label>Album <input type="text" id="edit-album" required></label>
+                <label>Replace Cover Art (optional)
+                    <input type="file" id="edit-cover" accept="image/*">
+                </label>
+                <label>Lyrics
+                    <textarea id="edit-lyrics" rows="6" placeholder="Paste lyrics here..."></textarea>
+                </label>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add to Playlist Modal -->
+    <div id="modal-playlist-pick" class="modal hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add to Playlist</h3>
+                <button class="icon-btn modal-close" data-close="modal-playlist-pick">✕</button>
+            </div>
+            <div id="playlist-pick-list" class="admin-list"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <audio id="audio-player" preload="metadata"></audio>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

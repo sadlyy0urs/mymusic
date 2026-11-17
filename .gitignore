@@ -4,5 +4,7 @@ __pycache__/
 venv/
 .venv/
 .env
+data/
+music/
 .DS_Store
 Thumbs.db

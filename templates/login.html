@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101014">
+    <title>{{ app_name }} — Sign In</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <img src="{{ url_for('static', filename=logo_file) }}" alt="{{ app_name }} logo" class="brand-logo">
+            <div>
+                <h1>{{ app_name }}</h1>
+                <p class="muted">Your personal music space</p>
+            </div>
+        </div>
+
+        {% if first_setup %}
+        <div class="info-banner">
+            <strong>First-time setup:</strong> Create the first account below—it will automatically become the <strong>Admin</strong>.
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error-banner">{{ error }}</div>
+        {% endif %}
+
+        <div class="auth-tabs">
+            <a href="{{ url_for('login') }}" class="{{ 'active' if mode == 'login' and not first_setup else '' }}">Sign In</a>
+            <a href="{{ url_for('register') }}" class="{{ 'active' if mode == 'register' or first_setup else '' }}">
+                {{ 'Create Admin' if first_setup else 'Register with Invite' }}
+            </a>
+        </div>
+
+        {% if mode == 'login' and not first_setup %}
+        <form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}" class="auth-form">
+            <label>Username
+                <input type="text" name="username" required autocomplete="username" placeholder="Your username">
+            </label>
+            <label>Password
+                <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            </label>
+            <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+        {% else %}
+        <form method="post" action="{{ url_for('register') }}" class="auth-form">
+            <label>Username
+                <input type="text" name="username" required autocomplete="username" placeholder="Choose a username">
+            </label>
+            <label>Password
+                <input type="password" name="password" required autocomplete="new-password" placeholder="At least 4 characters">
+            </label>
+            {% if not first_setup %}
+            <label>Invite Code
+                <input type="text" name="invite_code" required placeholder="Ask the admin for an invite code">
+            </label>
+            {% endif %}
+            <button type="submit" class="btn-primary">
+                {{ 'Create Admin Account' if first_setup else 'Create Account' }}
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>
