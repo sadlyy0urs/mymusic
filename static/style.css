@@ -1,0 +1,421 @@
+
+/* =========================
+   1. GENERAL SETTINGS
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #101014;
+    color: #eeeeF2;
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================
+   2. MAIN LAYOUT
+========================= */
+
+.app {
+    display: flex;
+    min-height: calc(100vh - 90px);
+}
+
+
+/* =========================
+   3. SIDEBAR
+========================= */
+
+.sidebar {
+    width: 230px;
+    background-color: #18181f;
+    padding: 30px 20px;
+    border-right: 1px solid #292932;
+}
+
+.logo {
+    font-size: 25px;
+    margin-bottom: 45px;
+}
+
+.logo span {
+    color: #a78bfa;
+}
+
+.menu-title,
+.sidebar-bottom p {
+    font-size: 11px;
+    color: #777783;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.sidebar nav a,
+.sidebar-bottom a {
+    display: block;
+    color: #aaaab5;
+    text-decoration: none;
+    padding: 13px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    transition: 0.2s;
+}
+
+.sidebar nav a:hover,
+.sidebar-bottom a:hover {
+    background-color: #292933;
+    color: white;
+}
+
+.sidebar nav .active {
+    background-color: #30283f;
+    color: #c4a9ff;
+}
+
+.sidebar-bottom {
+    margin-top: 50px;
+}
+
+
+/* =========================
+   4. MAIN CONTENT
+========================= */
+
+.main-content {
+    flex: 1;
+    padding: 35px 45px;
+    padding-bottom: 120px;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+}
+
+.greeting {
+    color: #9999a6;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+header h1 {
+    font-size: 30px;
+}
+
+.profile {
+    width: 42px;
+    height: 42px;
+    background-color: #392d50;
+    color: #d4bfff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* =========================
+   5. WELCOME BANNER
+========================= */
+
+.welcome {
+    background: linear-gradient(
+        120deg,
+        #29213b,
+        #1b1b27,
+        #30243b
+    );
+
+    padding: 35px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+}
+
+.welcome p:first-child {
+    color: #b8a0e5;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.welcome h2 {
+    font-size: 36px;
+    margin: 15px 0;
+    line-height: 1.2;
+}
+
+.welcome-description {
+    color: #aaaab5;
+    font-size: 14px;
+}
+
+
+/* =========================
+   6. MUSIC PLAYER
+========================= */
+
+.section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-heading span {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #777783;
+}
+
+.now-playing {
+    background-color: #1c1c25;
+    border: 1px solid #30303b;
+    border-radius: 15px;
+    padding: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.album-art {
+    width: 120px;
+    height: 120px;
+    flex-shrink: 0;
+
+    background: linear-gradient(
+        135deg,
+        #44315f,
+        #a17ac9
+    );
+
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 55px;
+    color: #eee5ff;
+}
+
+.song-info {
+    flex: 1;
+}
+
+.song-label {
+    color: #a78bfa;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.song-info h2 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.song-info p:last-child {
+    color: #858590;
+    font-size: 13px;
+}
+
+
+/* =========================
+   7. PLAYER BUTTONS
+========================= */
+
+button {
+    border: none;
+    cursor: pointer;
+    color: #aaaab5;
+    background: transparent;
+    font-size: 20px;
+}
+
+.play-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.play-button {
+    background-color: #a78bfa;
+    color: #17131e;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.play-button:hover {
+    background-color: #c4a9ff;
+    transform: scale(1.08);
+}
+
+
+/* =========================
+   8. LIBRARY
+========================= */
+
+.library-section {
+    margin-top: 40px;
+}
+
+.library-section h2 {
+    margin-bottom: 12px;
+}
+
+.library-section p {
+    color: #858590;
+    font-size: 14px;
+}
+
+
+/* =========================
+   9. BOTTOM MUSIC BAR
+========================= */
+
+.music-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+
+    background-color: #191920;
+    border-top: 1px solid #30303b;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 15px 25px;
+}
+
+.bar-song {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 230px;
+}
+
+.mini-art {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #44315f, #a17ac9);
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+}
+
+.bar-song strong {
+    font-size: 12px;
+}
+
+.bar-song p {
+    color: #858590;
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.bar-controls {
+    width: 40%;
+    max-width: 450px;
+}
+
+.bar-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 8px;
+}
+
+.bar-buttons .play-button {
+    width: 32px;
+    height: 32px;
+}
+
+.progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #858590;
+    font-size: 10px;
+}
+
+.progress-line {
+    flex: 1;
+    height: 4px;
+    background-color: #41414d;
+    border-radius: 5px;
+}
+
+.volume {
+    color: #aaaab5;
+    font-size: 12px;
+}
+
+
+/* =========================
+   10. PHONE RESPONSIVENESS
+========================= */
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        padding: 25px 18px 120px;
+    }
+
+    .welcome h2 {
+        font-size: 28px;
+    }
+
+    .now-playing {
+        flex-wrap: wrap;
+        padding: 18px;
+        gap: 15px;
+    }
+
+    .album-art {
+        width: 85px;
+        height: 85px;
+    }
+
+    .song-info h2 {
+        font-size: 16px;
+    }
+
+    .play-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .volume {
+        display: none;
+    }
+
+    .bar-song {
+        width: auto;
+    }
+
+    .bar-controls {
+        width: 45%;
+    }
+
+}

@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MyMusic</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">MyMusic<span> ♡</span></h2>
+
+            <nav>
+                <p class="menu-title">MENU</p>
+                <a class="active" href="#">⌂ Home</a>
+                <a href="#">⌕ Search</a>
+                <a href="#">♫ Your Library</a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <p>YOUR COLLECTION</p>
+                <a href="#">♡ Liked Songs</a>
+                <a href="#">♫ Playlists</a>
+            </div>
+        </aside>
+
+
+        <!-- Main content -->
+        <main class="main-content">
+
+            <header>
+                <div>
+                    <p class="greeting">YOUR PERSONAL MUSIC SPACE</p>
+                    <h1>Good evening ♡</h1>
+                </div>
+                <div class="profile">M</div>
+            </header>
+
+            <section class="welcome">
+                <div>
+                    <p>WELCOME TO YOUR LIBRARY</p>
+                    <h2>Your music.<br>Your world.</h2>
+                    <p class="welcome-description">
+                        All your favourite sounds in one place.
+                    </p>
+                </div>
+            </section>
+
+            <section class="player-section">
+                <div class="section-heading">
+                    <h2>Now Playing</h2>
+                    <span>YOUR PLAYER</span>
+                </div>
+
+                <div class="now-playing">
+
+                    <div class="album-art">
+                        <span>♫</span>
+                    </div>
+
+                    <div class="song-info">
+                        <p class="song-label">CURRENTLY PLAYING</p>
+                        <h2>No song selected</h2>
+                        <p>Select something from your library.</p>
+                    </div>
+
+                    <div class="play-controls">
+                        <button>⏮</button>
+                        <button class="play-button">▶</button>
+                        <button>⏭</button>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="library-section">
+                <h2>Your Library</h2>
+                <p>Your music collection will appear here.</p>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- Bottom music bar -->
+    <footer class="music-bar">
+
+        <div class="bar-song">
+            <div class="mini-art">♫</div>
+            <div>
+                <strong>No song selected</strong>
+                <p>MyMusic Player</p>
+            </div>
+        </div>
+
+        <div class="bar-controls">
+            <div class="bar-buttons">
+                <button>⏮</button>
+                <button class="play-button">▶</button>
+                <button>⏭</button>
+            </div>
+
+            <div class="progress">
+                <span>0:00</span>
+                <div class="progress-line"></div>
+                <span>0:00</span>
+            </div>
+        </div>
+
+        <div class="volume">
+            ♫ ━━━━━
+        </div>
+
+    </footer>
+
+</body>
+</html>
